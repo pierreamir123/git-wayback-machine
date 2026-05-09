@@ -8,7 +8,7 @@
     "outDir": "out",
     "strict": true,
     "noImplicitAny": true,
-    "moduleResolution": "node",
+    "moduleResolution": "Node16",
     "esModuleInterop": true
   },
   "exclude": ["node_modules", ".vscode-test", "webview"]
