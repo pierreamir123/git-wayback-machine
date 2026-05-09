@@ -178,6 +178,7 @@ function App() {
               blame={fileContent.hash === (history?.commits[0]?.hash) ? blame : []}
               addedLines={fileContent.addedLines}
               isReplaying={isPlaying}
+              currentAuthor={history?.commits[currentCommitIndex]?.authorName}
             />
 
             <div className="absolute bottom-8 left-0 right-0 flex justify-center pointer-events-none">
@@ -188,6 +189,13 @@ function App() {
                   onStep={handleStep}
                   speed={replaySpeed}
                   onSpeedChange={setReplaySpeed}
+                  currentAuthor={history?.commits[currentCommitIndex]?.authorName}
+                  onRestart={() => {
+                    if (history) {
+                      handleSelectCommitByIndex(history.commits.length - 1);
+                      setIsPlaying(true);
+                    }
+                  }}
                 />
               </div>
             </div>

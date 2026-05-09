@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { getAuthorColor } from '../../utils/colors';
 
 interface ReplayControllerProps {
   onStep: (indexOffset: number) => void;
@@ -6,6 +7,8 @@ interface ReplayControllerProps {
   onTogglePlay: () => void;
   speed: number;
   onSpeedChange: (speed: number) => void;
+  currentAuthor?: string;
+  onRestart?: () => void;
 }
 
 const ReplayController: React.FC<ReplayControllerProps> = ({
@@ -13,11 +16,25 @@ const ReplayController: React.FC<ReplayControllerProps> = ({
   isPlaying,
   onTogglePlay,
   speed,
-  onSpeedChange
+  onSpeedChange,
+  currentAuthor,
+  onRestart
 }) => {
+  const authorColor = currentAuthor ? getAuthorColor(currentAuthor) : '#3b82f6';
+
   return (
-    <div className="flex items-center gap-4 bg-white/5 border border-white/10 rounded-full px-4 py-2 self-center shadow-lg backdrop-blur-sm">
+    <div className="flex items-center gap-4 bg-black/60 border border-white/10 rounded-full px-4 py-2 self-center shadow-2xl backdrop-blur-md">
       <div className="flex items-center gap-1">
+        <button 
+          onClick={onRestart}
+          className="p-2 hover:bg-white/10 rounded-full transition-colors text-gray-400 hover:text-white"
+          title="Restart from Oldest"
+        >
+          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12.066 11.2a1 1 0 000 1.6l5.334 4A1 1 0 0019 16V8a1 1 0 00-1.6-.8l-5.334 4zM4.066 11.2a1 1 0 000 1.6l5.334 4A1 1 0 0011 16V8a1 1 0 00-1.6-.8l-5.334 4z" />
+          </svg>
+        </button>
+
         <button 
           onClick={() => onStep(1)} // Newer in history (up in list)
           className="p-2 hover:bg-white/10 rounded-full transition-colors text-gray-400 hover:text-white"
@@ -30,9 +47,14 @@ const ReplayController: React.FC<ReplayControllerProps> = ({
 
         <button 
           onClick={onTogglePlay}
-          className={`p-3 rounded-full transition-all ${isPlaying ? 'bg-red-500/20 text-red-500 hover:bg-red-500/30' : 'bg-blue-500/20 text-blue-500 hover:bg-blue-500/30'}`}
+          className="p-3 rounded-full transition-all relative group"
           title={isPlaying ? 'Pause' : 'Play'}
+          style={{ backgroundColor: `${authorColor}33`, color: authorColor }}
         >
+          <div 
+            className="absolute inset-0 rounded-full animate-ping opacity-20"
+            style={{ backgroundColor: authorColor, display: isPlaying ? 'block' : 'none' }}
+          />
           {isPlaying ? (
             <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
               <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zM7 8a1 1 0 012 0v4a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v4a1 1 0 102 0V8a1 1 0 00-1-1z" clipRule="evenodd" />
@@ -62,7 +84,8 @@ const ReplayController: React.FC<ReplayControllerProps> = ({
         <select 
           value={speed}
           onChange={(e) => onSpeedChange(Number(e.target.value))}
-          className="bg-transparent text-xs font-mono focus:outline-none cursor-pointer hover:text-blue-400"
+          className="bg-transparent text-xs font-mono focus:outline-none cursor-pointer hover:text-white appearance-none text-gray-400"
+          style={{ color: isPlaying ? authorColor : undefined }}
         >
           <option value={0.5}>0.5x</option>
           <option value={1}>1x</option>
