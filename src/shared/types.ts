@@ -30,3 +30,17 @@ export interface WebviewMessage {
   command: string;
   payload?: any;
 }
+
+export interface Insight {
+  type: 'hotspot' | 'ownership' | 'churn' | 'stability' | 'milestone';
+  title: string;
+  description: string;
+  severity: 'low' | 'medium' | 'high' | 'info';
+  data?: any;
+}
+
+export interface FileInsights {
+  stabilityScore: number;
+  insights: Insight[];
+  story: string[];
+}

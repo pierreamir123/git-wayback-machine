@@ -12,6 +12,24 @@
   "activationEvents": [],
   "main": "./dist/extension.js",
   "contributes": {
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "git-wayback",
+          "title": "Git Wayback",
+          "icon": "logo.svg"
+        }
+      ]
+    },
+    "views": {
+      "git-wayback": [
+        {
+          "id": "git-wayback-history",
+          "name": "File History",
+          "type": "tree"
+        }
+      ]
+    },
     "commands": [
       {
         "command": "git-wayback.openTimeline",

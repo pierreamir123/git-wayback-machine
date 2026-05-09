@@ -6,9 +6,10 @@ interface TimelineProps {
   filePath: string;
   onSelectCommit: (hash: string) => void;
   selectedHash: string | null;
+  logoUri?: string | null;
 }
 
-const Timeline: React.FC<TimelineProps> = ({ commits, filePath, onSelectCommit, selectedHash }) => {
+const Timeline: React.FC<TimelineProps> = ({ commits, filePath, onSelectCommit, selectedHash, logoUri }) => {
   const [authorFilter, setAuthorFilter] = useState<string>('all');
 
   const uniqueAuthors = useMemo(() => {
@@ -25,13 +26,20 @@ const Timeline: React.FC<TimelineProps> = ({ commits, filePath, onSelectCommit, 
     <div className="flex flex-col h-full overflow-hidden">
       {/* Header / Toolbar */}
       <div className="mb-6 space-y-4 shrink-0">
-        <div className="flex justify-between items-center">
+        <div className="flex items-center gap-3 mb-2">
+          {logoUri && (
+            <img src={logoUri} alt="Logo" className="w-8 h-8 object-contain" />
+          )}
           <div>
-            <h2 className="text-lg font-semibold text-gray-100">Commit History</h2>
-            <p className="text-[11px] text-gray-500 truncate max-w-xs" title={filePath}>
-              {filePath.split('/').pop()}
-            </p>
+            <h2 className="text-lg font-semibold text-gray-100 leading-none">Wayback</h2>
+            <p className="text-[10px] text-blue-500 font-bold uppercase tracking-widest mt-1">Timeline</p>
           </div>
+        </div>
+
+        <div className="flex justify-between items-center">
+          <p className="text-[11px] text-gray-500 truncate max-w-[120px]" title={filePath}>
+            {filePath.split('/').pop()}
+          </p>
           <div className="flex items-center gap-2">
             <select
               id="author-select"
