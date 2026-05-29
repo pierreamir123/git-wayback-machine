@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="resources/logo.png" width="200" height="200" alt="Git Wayback Machine Logo" />
+  <img src="logo.png" width="200" height="200" alt="Git Wayback Machine Logo" />
 </p>
 
 # Git Wayback Machine 🧭
