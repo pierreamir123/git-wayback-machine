@@ -1,6 +1,7 @@
 import { Commit } from '../shared/types';
 import { GitService } from './GitService';
 import * as path from 'path';
+import { toGitPath } from './PathUtils';
 
 export class HistoryService extends GitService {
   public async getFileHistory(filePath: string): Promise<Commit[]> {
@@ -9,8 +10,8 @@ export class HistoryService extends GitService {
       return [];
     }
 
-    const relativePath = path.relative(repoRoot, filePath);
-    
+    const relativePath = toGitPath(path.relative(repoRoot, filePath));
+
     // git log --follow --format='%H|%h|%an|%ae|%ad|%s|%b' --date=iso -- <file>
     const logOutput = await this.execute([
       'log',

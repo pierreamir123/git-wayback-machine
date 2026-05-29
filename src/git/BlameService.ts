@@ -1,6 +1,8 @@
 import { BlameLine } from '../shared/types';
-import { GitService } from './GitService';
+import { GitService, GitError } from './GitService';
 import * as path from 'path';
+import * as vscode from 'vscode';
+import { toGitPath } from './PathUtils';
 
 export class BlameService extends GitService {
   public async getBlame(filePath: string): Promise<BlameLine[]> {
@@ -9,17 +11,23 @@ export class BlameService extends GitService {
       return [];
     }
 
-    const relativePath = path.relative(repoRoot, filePath);
-    
-    // git blame -p --porcelain -- <file>
-    const blameOutput = await this.execute([
-      'blame',
-      '-p',
-      '--',
-      relativePath
-    ], repoRoot);
+    const relativePath = toGitPath(path.relative(repoRoot, filePath));
 
-    return this.parseBlame(blameOutput);
+    try {
+      // git blame -p --porcelain -- <file>
+      const blameOutput = await this.execute([
+        'blame',
+        '-p',
+        '--',
+        relativePath
+      ], repoRoot);
+
+      return this.parseBlame(blameOutput);
+    } catch (e) {
+      const errMsg = e instanceof GitError ? e.message : String(e);
+      vscode.window.showErrorMessage(`Failed to get blame for file: ${errMsg}`);
+      return [];
+    }
   }
 
   private parseBlame(output: string): BlameLine[] {
@@ -30,12 +38,8 @@ export class BlameService extends GitService {
 
     for (const line of lines) {
       if (line.match(/^[0-9a-f]{40}/)) {
-        if (currentLine.commitHash) {
-          // New block starts, but we need to push based on line count from git blame
-        }
         const parts = line.split(' ');
         currentLine.commitHash = parts[0];
-        // Line number in file is parts[2]
       } else if (line.startsWith('author ')) {
         currentLine.author = line.substring(7);
       } else if (line.startsWith('author-time ')) {

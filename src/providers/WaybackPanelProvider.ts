@@ -112,21 +112,24 @@ export class WaybackPanelProvider {
   private _parseAddedLinesFromDiff(diff: string): number[] {
     const addedLines: number[] = [];
     const chunks = diff.split(/^@@/m).slice(1);
-    
+
     for (const chunk of chunks) {
-      const headerMatch = chunk.match(/ \+\d+,(\d+)/);
+      // Match: @@ -oldStart,count +newStart,count @@ or @@ -oldStart +newStart @@
+      const headerMatch = chunk.match(/ \+(\d+)(?:,(\d+))?/);
       if (!headerMatch) continue;
-      
-      let currentLine = parseInt(chunk.match(/ \+(\d+),/)?.[1] || '0', 10);
+
+      let currentLine = parseInt(headerMatch[1], 10);
       const lines = chunk.split('\n').slice(1);
-      
+
       for (const line of lines) {
         if (line.startsWith('+') && !line.startsWith('+++')) {
           addedLines.push(currentLine);
           currentLine++;
-        } else if (!line.startsWith('-')) {
+        } else if (!line.startsWith('-') && line.length > 0) {
+          // Context line (space prefix) or empty - advance line counter
           currentLine++;
         }
+        // Lines starting with '-' don't advance currentLine
       }
     }
     return addedLines;
@@ -138,10 +141,23 @@ export class WaybackPanelProvider {
     }
 
     try {
+      // Show loading indicator
+      this._panel.webview.postMessage({
+        command: 'setLoading',
+        payload: { isLoading: true }
+      });
+
       const [history, blame] = await Promise.all([
         this._historyService.getFileHistory(fileUri.fsPath),
         this._blameService.getBlame(fileUri.fsPath)
       ]);
+
+      if (history.length === 0) {
+        vscode.window.showWarningMessage(
+          `No git history found for ${path.basename(fileUri.fsPath)}. ` +
+          'Is this file tracked by git?'
+        );
+      }
 
       const insights = this._insightsEngine.analyze(history, blame);
 
@@ -156,7 +172,14 @@ export class WaybackPanelProvider {
         }
       });
     } catch (error) {
-      vscode.window.showErrorMessage(`Failed to get git data: ${error}`);
+      const errorMsg = error instanceof Error ? error.message : String(error);
+      vscode.window.showErrorMessage(
+        `Failed to load git history: ${errorMsg}`
+      );
+      this._panel?.webview.postMessage({
+        command: 'setError',
+        payload: { error: errorMsg }
+      });
     }
   }
 
