@@ -3,6 +3,8 @@ import Timeline from './components/Timeline/Timeline'
 import FileViewer from './components/Replay/FileViewer'
 import ReplayController from './components/Replay/ReplayController'
 import InsightsPanel from './components/Insights/InsightsPanel'
+import CommitExplorerCard from './components/CommitExplorerCard/CommitExplorerCard'
+import TimelineScrubber from './components/TimelineScrubber/TimelineScrubber'
 
 interface Commit {
   hash: string;
