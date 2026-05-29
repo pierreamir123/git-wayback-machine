@@ -155,37 +155,45 @@ function App() {
 
       {/* Main Content: File Viewer */}
       <div className="flex-1 flex flex-col p-4 overflow-hidden relative">
-        {fileContent ? (
+        {fileContent && currentCommitIndex !== -1 && history ? (
           <div className="flex flex-col h-full space-y-4">
-            <div className="flex justify-between items-center bg-white/5 border border-white/10 rounded px-3 py-2 shrink-0">
-              <div className="flex items-center gap-2">
-                <span className="text-xs font-mono text-gray-400">Snapshot: {fileContent.hash.substring(0, 7)}</span>
-                <span className="text-[10px] text-gray-600">({currentCommitIndex + 1} of {history?.commits.length})</span>
-              </div>
-              <div className="flex items-center gap-4">
-                {isLoadingContent && (
-                  <div className="w-3 h-3 border border-blue-500 border-t-transparent rounded-full animate-spin" />
-                )}
-                <button 
-                  onClick={() => setShowInsights(!showInsights)}
-                  className={`text-[10px] uppercase font-bold tracking-widest px-2 py-1 rounded transition-colors ${showInsights ? 'bg-blue-500/20 text-blue-400 border border-blue-500/30' : 'bg-white/5 text-gray-500 border border-white/10 hover:text-gray-300'}`}
-                >
-                  Insights
-                </button>
-              </div>
+            {/* Commit Explorer Card */}
+            <CommitExplorerCard
+              commit={history.commits[currentCommitIndex]}
+              currentIndex={currentCommitIndex}
+              totalCommits={history.commits.length}
+            />
+
+            {/* Timeline Scrubber */}
+            <TimelineScrubber
+              commits={history.commits}
+              currentIndex={currentCommitIndex}
+              onSelectCommit={handleSelectCommitByIndex}
+            />
+
+            {/* Insights Toggle */}
+            <div className="flex justify-end">
+              <button
+                onClick={() => setShowInsights(!showInsights)}
+                className={`text-[10px] uppercase font-bold tracking-widest px-2 py-1 rounded transition-colors ${showInsights ? 'bg-blue-500/20 text-blue-400 border border-blue-500/30' : 'bg-white/5 text-gray-500 border border-white/10 hover:text-gray-300'}`}
+              >
+                Insights
+              </button>
             </div>
-            
-            <FileViewer 
-              content={fileContent.content} 
+
+            {/* File Viewer */}
+            <FileViewer
+              content={fileContent.content}
               blame={fileContent.hash === (history?.commits[0]?.hash) ? blame : []}
               addedLines={fileContent.addedLines}
               isReplaying={isPlaying}
               currentAuthor={history?.commits[currentCommitIndex]?.authorName}
             />
 
+            {/* Replay Controls - Bottom */}
             <div className="absolute bottom-8 left-0 right-0 flex justify-center pointer-events-none">
               <div className="pointer-events-auto">
-                <ReplayController 
+                <ReplayController
                   isPlaying={isPlaying}
                   onTogglePlay={() => setIsPlaying(!isPlaying)}
                   onStep={handleStep}
