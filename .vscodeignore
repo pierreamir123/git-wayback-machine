@@ -3,7 +3,6 @@
 package-lock.json
 tsconfig.json
 webpack.config.js
-logo.png
 src/**
 webview/node_modules/**
 webview/src/**

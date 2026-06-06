@@ -4,10 +4,15 @@
   "description": "Visualize and replay your git history like a time machine.",
   "version": "2.0.0",
   "publisher": "PierreBassily",
+  "icon": "logo.png",
   "repository": {
     "type": "git",
     "url": "https://github.com/pierrebassily/git-wayback-machine"
   },
+  "bugs": {
+    "url": "https://github.com/pierrebassily/git-wayback-machine/issues"
+  },
+  "homepage": "https://github.com/pierrebassily/git-wayback-machine#readme",
   "engines": {
     "vscode": "^1.85.0"
   },
