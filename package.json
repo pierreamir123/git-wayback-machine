@@ -2,7 +2,7 @@
   "name": "git-wayback-machine",
   "displayName": "Git Wayback Machine",
   "description": "Visualize and replay your git history like a time machine.",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "publisher": "git-wayback",
   "repository": {
     "type": "git",
